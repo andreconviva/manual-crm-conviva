@@ -13,10 +13,20 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
         body { font-family: 'Inter', sans-serif; }
-        .kanban-column { min-width: 320px; max-width: 320px; }
+        
+        /* Ajustes de tamanho para caber em uma tela (100% zoom) */
+        .kanban-column { min-width: 210px; max-width: 280px; flex: 1; }
+        .kanban-column .text-xs { font-size: 0.65rem !important; line-height: 1.2 !important; }
+        .kanban-column .text-sm { font-size: 0.75rem !important; line-height: 1.2 !important; }
+        .kanban-column .p-4 { padding: 0.75rem !important; }
+        .kanban-column .p-3 { padding: 0.5rem !important; }
+        .kanban-column .gap-4 { gap: 0.5rem !important; }
+        .kanban-column .gap-3 { gap: 0.5rem !important; }
+        .kanban-column h3 { font-size: 0.65rem !important; }
+
         .tab-active { background-color: white; color: #2563eb; box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1); }
         
-        /* Estilos para o chat da IA */
+        /* Estilos para o chat */
         .chat-container { height: calc(100vh - 300px); min-height: 400px; }
         .msg-ai { background-color: #f0fdf4; border: 1px solid #bbf7d0; color: #166534; }
         .msg-user { background-color: #eff6ff; border: 1px solid #bfdbfe; color: #1e40af; }
@@ -25,7 +35,7 @@
         .typing-dot:nth-child(2) { animation-delay: -0.16s; }
         @keyframes typing { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1); } }
         
-        /* Ajustes no markdown gerado pela IA */
+        /* Ajustes no markdown */
         .prose p { margin-bottom: 0.5rem; }
         .prose ul { list-style-type: disc; padding-left: 1.5rem; margin-bottom: 0.5rem; }
         .prose strong { font-weight: 600; }
@@ -50,7 +60,7 @@
                     Rotina do Corretor
                 </button>
                 <button onclick="switchTab('ai')" id="btn-ai" class="px-4 py-2 rounded-md text-sm font-medium transition-all text-slate-600 hover:text-slate-800 flex items-center gap-2 whitespace-nowrap">
-                    <i data-lucide="sparkles" class="w-4 h-4 text-amber-500"></i> Assistente IA
+                    <i data-lucide="bot" class="w-4 h-4 text-emerald-500"></i> Assistente Virtual
                 </button>
             </nav>
         </div>
@@ -58,14 +68,14 @@
 
     <main class="p-4 md:p-8 max-w-[1600px] mx-auto">
         
-        <!-- Alerta Principal (Visível no Funil e Rotina) -->
+        <!-- Alerta Principal -->
         <div id="main-alert" class="bg-blue-600 text-white p-4 rounded-xl shadow-md mb-8 flex items-center gap-4">
             <i data-lucide="info" class="w-8 h-8 flex-shrink-0 opacity-80"></i>
             <p class="font-semibold text-lg italic">"Se não está no CRM, não aconteceu. O CRM é sua ferramenta de proteção e gestão."</p>
         </div>
 
         <!-- ================= SEÇÃO: KANBAN ================= -->
-        <div id="section-kanban" class="flex gap-4 overflow-x-auto pb-6">
+        <div id="section-kanban" class="flex gap-2 overflow-x-auto pb-6">
             
             <!-- Aguardando Atendimento -->
             <div class="kanban-column flex-shrink-0 rounded-xl border-t-4 border-blue-200 bg-blue-50 p-4 flex flex-col gap-4 shadow-sm">
@@ -200,12 +210,11 @@
                 <h3 class="font-bold uppercase text-xs tracking-wider text-gray-700 flex items-center gap-2">
                     <i data-lucide="check-circle" class="w-4 h-4"></i> Finalização
                 </h3>
-                <div class="bg-white/60 p-3 rounded-lg border border-slate-200/50 text-xs">
-                    <p class="mb-1"><strong>🎯 Objetivo:</strong> Classificar o fim da jornada do lead.</p>
-                    <p class="mb-1"><strong>👉 Fazer:</strong> Sinalizar o motivo real do encerramento.</p>
-                    <p><strong>🏁 Sair:</strong> Arquivo definitivo.</p>
-                </div>
                 <div class="flex flex-col gap-3 mt-1">
+                    <div class="bg-white p-4 rounded-lg shadow-sm border-l-4 border-green-500">
+                        <div class="text-sm font-bold mb-1 text-green-600">Venda Ganha</div>
+                        <p class="text-xs text-slate-600"><strong>Nutrir relacionamento:</strong> Manter contato constante para futuras compras e pedir indicações de novos clientes.</p>
+                    </div>
                     <div class="bg-white p-4 rounded-lg shadow-sm border-l-4 border-red-500">
                         <div class="text-sm font-bold mb-1 text-red-600">Venda Perdida</div>
                         <p class="text-xs text-slate-600"><strong>REGRA:</strong> Usar APENAS em casos de DISTRATO (cancelamento de contrato).</p>
@@ -293,17 +302,19 @@
             </div>
         </div>
 
-        <!-- ================= SEÇÃO: ASSISTENTE IA (GEMINI) ================= -->
+        <!-- ================= SEÇÃO: ASSISTENTE VIRTUAL (Local/Regras) ================= -->
         <div id="section-ai" class="hidden flex-col gap-4">
             <div class="bg-white rounded-2xl shadow-sm border border-slate-200 flex flex-col overflow-hidden chat-container">
                 <!-- Chat Header -->
-                <div class="bg-slate-50 border-b border-slate-200 p-4 flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center text-amber-600">
-                        <i data-lucide="bot" class="w-6 h-6"></i>
-                    </div>
-                    <div>
-                        <h3 class="font-bold text-slate-800">Assistente IA - Conviva</h3>
-                        <p class="text-xs text-slate-500">Tire dúvidas sobre o manual ou peça ajuda para resumir anotações.</p>
+                <div class="bg-slate-50 border-b border-slate-200 p-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600">
+                            <i data-lucide="bot" class="w-6 h-6"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-slate-800">Assistente Virtual Conviva</h3>
+                            <p class="text-xs text-slate-500">Consulte as regras do funil instantaneamente (Offline).</p>
+                        </div>
                     </div>
                 </div>
                 
@@ -311,18 +322,18 @@
                 <div id="chat-messages" class="flex-1 overflow-y-auto p-4 flex flex-col gap-4 bg-slate-50/50">
                     <!-- Mensagem Inicial -->
                     <div class="flex gap-3 max-w-[85%]">
-                        <div class="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center flex-shrink-0 mt-1">
-                            <i data-lucide="bot" class="w-4 h-4 text-amber-600"></i>
+                        <div class="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center flex-shrink-0 mt-1">
+                            <i data-lucide="bot" class="w-4 h-4 text-emerald-600"></i>
                         </div>
                         <div class="msg-ai p-3 rounded-2xl rounded-tl-none text-sm shadow-sm prose">
-                            <p>Olá! Sou a IA treinada com o <strong>Manual do CRM Conviva</strong>.</p>
-                            <p>Você pode me perguntar coisas como:</p>
+                            <p>Olá! Sou o Assistente Virtual da Conviva. Fui programado com todo o <strong>Manual do CRM</strong>.</p>
+                            <p>Pode fazer perguntas rápidas sobre as regras, como:</p>
                             <ul>
-                                <li><em>"O cliente não me atendeu na 3ª ligação. Qual status devo usar?"</em></li>
-                                <li><em>"O cliente cancelou o contrato. Coloco como Lead Desqualificado?"</em></li>
-                                <li><em>"Pode resumir essa anotação para eu colocar no histórico: [cole seu texto bagunçado aqui]"</em></li>
+                                <li><em>"Quando devo usar venda perdida?"</em></li>
+                                <li><em>"O que é lead desqualificado?"</em></li>
+                                <li><em>"Como devo registrar uma anotação?"</em></li>
+                                <li><em>"O cliente não responde, o que faço?"</em></li>
                             </ul>
-                            <p>Como posso ajudar agora?</p>
                         </div>
                     </div>
                 </div>
@@ -330,8 +341,8 @@
                 <!-- Chat Input Area -->
                 <div class="p-4 bg-white border-t border-slate-200">
                     <form id="ai-form" class="flex gap-2 relative">
-                        <input type="text" id="ai-input" class="flex-1 bg-slate-100 border-none rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Digite sua pergunta aqui..." autocomplete="off">
-                        <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white rounded-xl px-5 py-3 flex items-center justify-center transition-colors">
+                        <input type="text" id="ai-input" class="flex-1 bg-slate-100 border-none rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500" placeholder="Escreva a sua dúvida aqui..." autocomplete="off">
+                        <button type="submit" class="bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl px-5 py-3 flex items-center justify-center transition-colors">
                             <i data-lucide="send" class="w-4 h-4"></i>
                         </button>
                     </form>
@@ -347,28 +358,10 @@
         </p>
     </footer>
 
-    <!-- Scripts: Lógica de Abas e Integração Gemini -->
+    <!-- Scripts: Lógica de Abas e Assistente Local -->
     <script>
         // Inicializar ícones Lucide
         lucide.createIcons();
-
-        // Variáveis de Estado da IA
-        const apiKey = ""; // Definido automaticamente pelo ambiente de execução
-        let chatHistory = [];
-        
-        // Contexto do Sistema (Regras do CRM)
-        const systemPrompt = `Você é um assistente especialista do CRM da Conviva Engenharia. 
-Seu objetivo é orientar os corretores a usarem o funil de vendas (Kanban) corretamente.
-Regras principais do manual que você deve seguir estritamente:
-1. Regra de Ouro: "Se não está no CRM, não aconteceu."
-2. Funil Aguardando Atendimento: O corretor deve puxar o lead rápido e tentar o primeiro contato. Status: Contato não realizado, Redistribuição de leads (só gerência), Em atendimento (IA), Reunião agendada (IA).
-3. Funil Em Atendimento: Gerar conexão. Status: Em conversa ativa, 1ª a 4ª tentativa, Tentativas esgotadas, Retorno agendado, Sem resposta.
-4. Funil Atendimento Frio: Não perder leads. Status: 1º a 4º Follow Up, Vender para comprar, Reunião realizada (esfriou), Imóvel não atende, Lead em avaliação.
-5. Funil Atendimento Quente: Converter em venda. Status: Negociação ativa, Aguardando retorno, Reunião agendada/realizada, Revisão de proposta.
-6. Finalização - Venda Perdida: USAR APENAS PARA DISTRATO (cancelamento de contrato). NUNCA usar para leads que não avançaram.
-7. Finalização - Lead Desqualificado: Usar para lead sem perfil (sem renda, dados incorretos, fora de região).
-8. Registro de Atendimento: O padrão é registrar "O que aconteceu", "Qual o interesse", "Próximo passo". Todo lead ativo precisa ter tarefa agendada.
-Responda sempre em português do Brasil de forma concisa, educada e direta, formatando usando markdown (negritos e listas) para facilitar a leitura. Se pedirem para formatar uma anotação, estruture-a no Padrão de Anotação (Aconteceu / Interesse / Próximo Passo).`;
 
         // Lógica de Troca de Abas
         function switchTab(tab) {
@@ -404,46 +397,43 @@ Responda sempre em português do Brasil de forma concisa, educada e direta, form
             } else if (tab === 'ai') {
                 targetSec.classList.remove('hidden');
                 targetSec.classList.add('flex');
-                alertMsg.style.display = 'none'; // Esconder alerta principal na tela da IA
+                alertMsg.style.display = 'none';
             }
         }
 
-        // --- LÓGICA DO GEMINI API ---
-
+        // --- LÓGICA DO ASSISTENTE VIRTUAL LOCAL (Sem API) ---
         const chatMessages = document.getElementById('chat-messages');
         const aiForm = document.getElementById('ai-form');
         const aiInput = document.getElementById('ai-input');
 
-        // Função para adicionar mensagem na tela
         function appendMessage(role, text) {
             const msgDiv = document.createElement('div');
             msgDiv.className = `flex gap-3 max-w-[85%] ${role === 'user' ? 'self-end flex-row-reverse' : ''}`;
             
             const iconHTML = role === 'user' 
                 ? `<div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0 mt-1"><i data-lucide="user" class="w-4 h-4 text-blue-600"></i></div>`
-                : `<div class="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center flex-shrink-0 mt-1"><i data-lucide="bot" class="w-4 h-4 text-amber-600"></i></div>`;
+                : `<div class="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center flex-shrink-0 mt-1"><i data-lucide="bot" class="w-4 h-4 text-emerald-600"></i></div>`;
             
             const contentHTML = `<div class="${role === 'user' ? 'msg-user' : 'msg-ai'} p-3 rounded-2xl ${role === 'user' ? 'rounded-tr-none' : 'rounded-tl-none'} text-sm shadow-sm prose">${role === 'user' ? text : marked.parse(text)}</div>`;
             
             msgDiv.innerHTML = iconHTML + contentHTML;
             chatMessages.appendChild(msgDiv);
-            lucide.createIcons(); // Recriar ícones dinâmicos
-            chatMessages.scrollTop = chatMessages.scrollHeight; // Rolar para o final
+            lucide.createIcons();
+            chatMessages.scrollTop = chatMessages.scrollHeight;
         }
 
-        // Função de loading (Typing indicator)
         function showLoading() {
             const loadingDiv = document.createElement('div');
             loadingDiv.id = 'ai-loading';
             loadingDiv.className = `flex gap-3 max-w-[85%]`;
             loadingDiv.innerHTML = `
-                <div class="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center flex-shrink-0 mt-1">
-                    <i data-lucide="bot" class="w-4 h-4 text-amber-600"></i>
+                <div class="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center flex-shrink-0 mt-1">
+                    <i data-lucide="bot" class="w-4 h-4 text-emerald-600"></i>
                 </div>
                 <div class="msg-ai p-4 rounded-2xl rounded-tl-none text-sm shadow-sm flex gap-1 items-center h-[46px]">
-                    <div class="w-2 h-2 bg-amber-400 rounded-full typing-dot"></div>
-                    <div class="w-2 h-2 bg-amber-400 rounded-full typing-dot"></div>
-                    <div class="w-2 h-2 bg-amber-400 rounded-full typing-dot"></div>
+                    <div class="w-2 h-2 bg-emerald-400 rounded-full typing-dot"></div>
+                    <div class="w-2 h-2 bg-emerald-400 rounded-full typing-dot"></div>
+                    <div class="w-2 h-2 bg-emerald-400 rounded-full typing-dot"></div>
                 </div>
             `;
             chatMessages.appendChild(loadingDiv);
@@ -456,49 +446,52 @@ Responda sempre em português do Brasil de forma concisa, educada e direta, form
             if (loadingDiv) loadingDiv.remove();
         }
 
-        // Função de Chamada API com Exponential Backoff
-        async function fetchGeminiWithBackoff(prompt, maxRetries = 5) {
-            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+        // Base de Conhecimento "Local" (Regras programadas)
+        function getLocalResponse(input) {
+            const text = input.toLowerCase();
             
-            // Construir histórico
-            const contents = chatHistory.map(msg => ({
-                role: msg.role === 'ai' ? 'model' : 'user',
-                parts: [{ text: msg.text }]
-            }));
-            
-            // Adicionar mensagem atual
-            contents.push({ role: 'user', parts: [{ text: prompt }] });
-
-            const payload = {
-                systemInstruction: { parts: [{ text: systemPrompt }] },
-                contents: contents
-            };
-
-            for (let i = 0; i < maxRetries; i++) {
-                try {
-                    const response = await fetch(url, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(payload)
-                    });
-
-                    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-                    
-                    const data = await response.json();
-                    return data.candidates?.[0]?.content?.parts?.[0]?.text || "Desculpe, não consegui processar a resposta.";
-                } catch (error) {
-                    if (i === maxRetries - 1) {
-                        console.error('Falha após todas as tentativas:', error);
-                        return "Houve um erro de conexão com a IA. Por favor, tente novamente em alguns instantes.";
-                    }
-                    // Backoff: 1s, 2s, 4s, 8s, 16s...
-                    await new Promise(resolve => setTimeout(resolve, Math.pow(2, i) * 1000));
-                }
+            // Regras de Finalização
+            if (text.includes('venda perdida') || text.includes('distrato')) {
+                return "**⚠️ Atenção:** A etapa de **Venda Perdida** deve ser usada EXCLUSIVAMENTE em casos de distrato (cancelamento de contrato que já estava assinado).\n\nNunca utilize para clientes que pararam de responder ou que não aprovaram o crédito.";
             }
+            if (text.includes('desqualificado') || text.includes('fora de região') || text.includes('sem perfil')) {
+                return "O status **Lead Desqualificado** serve para classificar leads sem potencial de compra. Motivos válidos: \n- Dados incorretos\n- Sem interesse\n- Sem condição financeira/renda\n- Procura noutra região ou perfil de produto diferente.";
+            }
+            
+            // Regras de Rotina/Anotações
+            if (text.includes('registrar') || text.includes('anotar') || text.includes('anotação') || text.includes('histórico')) {
+                return "De acordo com o manual, **toda** a interação com o cliente deve ser registada no histórico.\n\nO padrão obrigatório de registo é:\n1. **O que aconteceu:** (Ex: Liguei e ele atendeu)\n2. **Interesse do cliente:** (Ex: Tem interesse num T2, mas precisa vender o dele primeiro)\n3. **Próximo passo:** (Ex: Agendado retorno para o dia 15)";
+            }
+            if (text.includes('tarefa') || text.includes('agendar')) {
+                return "A regra de ouro das tarefas é: **Todo o lead ativo tem de ter uma próxima ação definida.** Utilize as tarefas para marcar follow-ups, reuniões ou retornos combinados com o cliente.";
+            }
+            
+            // Regras do Funil
+            if (text.includes('não responde') || text.includes('sumiu') || text.includes('tentativa')) {
+                return "Na etapa **Em Atendimento**, deve fazer de 1 a 4 tentativas de contacto. Registe cada uma. Se o cliente esgotar as 4 tentativas e não responder, coloque o status como **Tentativas Esgotadas**.";
+            }
+            if (text.includes('frio') || text.includes('esfriou') || text.includes('vender para comprar')) {
+                return "A etapa **Atendimento Frio** é para não perder clientes que ainda podem converter no futuro. Utilize-a quando o cliente precisa vender um imóvel primeiro, quando não temos um produto que atenda no momento, ou para ir fazendo follow-ups periódicos.";
+            }
+            if (text.includes('quente') || text.includes('proposta') || text.includes('negociação')) {
+                return "A etapa **Atendimento Quente** foca na conversão. Mova o lead para cá quando estiver com negociação ativa, aguardando resposta da proposta ou em ajustes finais de valores.";
+            }
+            if (text.includes('reserva')) {
+                return "A **Reserva** é o momento de conversão! O gatilho para a solicitar é a transição do Atendimento Quente para a Venda. Certifique-se de que os dados pessoais e o perfil de rendimentos do cliente estão 100% atualizados para evitar problemas de aprovação.";
+            }
+            if (text.includes('regra de ouro') || text.includes('regra principal')) {
+                return "**Se não está no CRM, não aconteceu.** \n\nO CRM é a sua ferramenta de proteção e o que garante a continuidade comercial.";
+            }
+            if (text.includes('venda ganha') || text.includes('fechou')) {
+                return "Parabéns pela venda! Na **Venda Ganha**, o seu trabalho é nutrir o relacionamento: mantenha o contacto para futuras compras e não se esqueça de pedir indicações de novos clientes.";
+            }
+
+            // Resposta Padrão (Fallback)
+            return "Desculpe, sou um assistente programado apenas com as regras específicas do CRM Conviva. \n\nPode perguntar-me sobre:\n- *Como usar a venda perdida?*\n- *O que é lead desqualificado?*\n- *Qual é o padrão de anotação?*\n- *O que fazer se o cliente não responder?*";
         }
 
         // Submit do Form
-        aiForm.addEventListener('submit', async (e) => {
+        aiForm.addEventListener('submit', (e) => {
             e.preventDefault();
             const userText = aiInput.value.trim();
             if (!userText) return;
@@ -509,18 +502,15 @@ Responda sempre em português do Brasil de forma concisa, educada e direta, form
             aiInput.disabled = true;
             showLoading();
 
-            // Call API
-            const responseText = await fetchGeminiWithBackoff(userText);
-            
-            // Update UI & History
-            removeLoading();
-            appendMessage('ai', responseText);
-            
-            chatHistory.push({ role: 'user', text: userText });
-            chatHistory.push({ role: 'ai', text: responseText });
-            
-            aiInput.disabled = false;
-            aiInput.focus();
+            // Simular tempo de resposta da IA
+            setTimeout(() => {
+                const responseText = getLocalResponse(userText);
+                removeLoading();
+                appendMessage('ai', responseText);
+                
+                aiInput.disabled = false;
+                aiInput.focus();
+            }, 800); // 800ms delay para parecer natural
         });
 
     </script>
