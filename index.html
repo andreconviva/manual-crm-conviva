@@ -4,17 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Manual CRM Conviva - Guia Operacional</title>
-    <!-- Tailwind CSS CDN -->
+    
+    <!-- Scripts essenciais para o Design e Ícones -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Lucide Icons Library -->
     <script src="https://unpkg.com/lucide@latest"></script>
-    <!-- Markdown Parser para as respostas da IA -->
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
         body { font-family: 'Inter', sans-serif; }
         
-        /* Ajustes de tamanho para caber em uma tela (100% zoom) */
+        /* Ajustes de tamanho para caber numa tela (100% zoom) */
         .kanban-column { min-width: 210px; max-width: 280px; flex: 1; }
         .kanban-column .text-xs { font-size: 0.65rem !important; line-height: 1.2 !important; }
         .kanban-column .text-sm { font-size: 0.75rem !important; line-height: 1.2 !important; }
@@ -24,26 +23,16 @@
         .kanban-column .gap-3 { gap: 0.5rem !important; }
         .kanban-column h3 { font-size: 0.65rem !important; }
 
+        /* Estilo da aba ativa */
         .tab-active { background-color: white; color: #2563eb; box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1); }
         
-        /* Estilos para o chat */
-        .chat-container { height: calc(100vh - 300px); min-height: 400px; }
-        .msg-ai { background-color: #f0fdf4; border: 1px solid #bbf7d0; color: #166534; }
-        .msg-user { background-color: #eff6ff; border: 1px solid #bfdbfe; color: #1e40af; }
-        .typing-dot { animation: typing 1.4s infinite ease-in-out both; }
-        .typing-dot:nth-child(1) { animation-delay: -0.32s; }
-        .typing-dot:nth-child(2) { animation-delay: -0.16s; }
-        @keyframes typing { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1); } }
-        
-        /* Ajustes no markdown */
-        .prose p { margin-bottom: 0.5rem; }
-        .prose ul { list-style-type: disc; padding-left: 1.5rem; margin-bottom: 0.5rem; }
-        .prose strong { font-weight: 600; }
+        /* Transições do Slider */
+        .slide-inner { transition: opacity 0.3s ease-in-out; }
     </style>
 </head>
-<body class="bg-slate-100 text-slate-900 min-h-screen">
+<body class="bg-slate-100 text-slate-900 min-h-screen flex flex-col">
 
-    <!-- Header -->
+    <!-- Cabeçalho Principal -->
     <header class="bg-white border-b border-slate-200 p-6 shadow-sm sticky top-0 z-10">
         <div class="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
@@ -53,29 +42,80 @@
                 <p class="text-slate-500 text-sm mt-1">Manual Operacional de Vendas (Kanban + Regras)</p>
             </div>
             <nav class="flex bg-slate-200 p-1 rounded-lg overflow-x-auto">
-                <button onclick="switchTab('kanban')" id="btn-kanban" class="px-4 py-2 rounded-md text-sm font-medium transition-all tab-active whitespace-nowrap">
-                    Visual Funil
+                <button onclick="switchTab('manual')" id="btn-manual" class="px-4 py-2 rounded-md text-sm font-medium transition-all tab-active whitespace-nowrap">
+                    Manual
+                </button>
+                <button onclick="switchTab('kanban')" id="btn-kanban" class="px-4 py-2 rounded-md text-sm font-medium transition-all text-slate-600 hover:text-slate-800 whitespace-nowrap">
+                    Etapas do Funil
                 </button>
                 <button onclick="switchTab('routine')" id="btn-routine" class="px-4 py-2 rounded-md text-sm font-medium transition-all text-slate-600 hover:text-slate-800 whitespace-nowrap">
                     Rotina do Corretor
-                </button>
-                <button onclick="switchTab('ai')" id="btn-ai" class="px-4 py-2 rounded-md text-sm font-medium transition-all text-slate-600 hover:text-slate-800 flex items-center gap-2 whitespace-nowrap">
-                    <i data-lucide="bot" class="w-4 h-4 text-emerald-500"></i> Assistente Virtual
                 </button>
             </nav>
         </div>
     </header>
 
-    <main class="p-4 md:p-8 max-w-[1600px] mx-auto">
+    <main class="p-4 md:p-8 max-w-[1600px] mx-auto w-full flex-1 flex flex-col">
         
-        <!-- Alerta Principal -->
-        <div id="main-alert" class="bg-blue-600 text-white p-4 rounded-xl shadow-md mb-8 flex items-center gap-4">
+        <!-- Alerta de Regra de Ouro -->
+        <div id="main-alert" class="bg-blue-600 text-white p-4 rounded-xl shadow-md mb-8 flex items-center gap-4 flex-shrink-0">
             <i data-lucide="info" class="w-8 h-8 flex-shrink-0 opacity-80"></i>
             <p class="font-semibold text-lg italic">"Se não está no CRM, não aconteceu. O CRM é sua ferramenta de proteção e gestão."</p>
         </div>
 
-        <!-- ================= SEÇÃO: KANBAN ================= -->
-        <div id="section-kanban" class="flex gap-2 overflow-x-auto pb-6">
+        <!-- ================= ABA 1: MANUAL (SLIDER) ================= -->
+        <div id="section-manual" class="flex flex-col flex-1 bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden relative min-h-[500px]">
+            
+            <div class="relative w-full h-full flex-1 flex items-center justify-center p-8">
+                
+                <!-- Slide 0: Imagem Kanban -->
+                <div id="slide-0" class="slide-inner absolute inset-0 flex flex-col items-center justify-center p-8 opacity-100 z-10 bg-white">
+                    <h2 class="text-3xl font-bold text-slate-800 mb-6 flex items-center gap-3">
+                        <i data-lucide="layout-dashboard" class="text-blue-600"></i> Painel Kanban
+                    </h2>
+                    
+                    <div class="w-full max-w-5xl rounded-xl overflow-hidden shadow-lg border border-slate-200 bg-slate-50 flex items-center justify-center relative">
+                        <!-- IMAGEM DO KANBAN (ATUALIZADA) -->
+                        <img src="kanban.jpg" onerror="this.src='https://placehold.co/1200x600/e2e8f0/1e293b?text=Coloque+a+imagem+na+mesma+pasta+que+este+ficheiro'" alt="Painel Kanban Conviva" class="w-full h-auto max-h-[60vh] object-contain">
+                    </div>
+                    
+                    <p class="mt-6 text-slate-500 text-center max-w-2xl">
+                        Este é o seu painel central. Arraste os cards para avançar os leads nas etapas conforme a negociação evolui. Use as abas acima para ver os detalhes de cada etapa.
+                    </p>
+                </div>
+
+                <!-- Slide 1: Instruções -->
+                <div id="slide-1" class="slide-inner absolute inset-0 flex flex-col items-center justify-center p-8 opacity-0 z-0 bg-white pointer-events-none">
+                    <h2 class="text-3xl font-bold text-slate-800 mb-6 flex items-center gap-3">
+                        <i data-lucide="book-open" class="text-blue-600"></i> Como utilizar este Guia
+                    </h2>
+                    <div class="max-w-2xl text-center space-y-4 text-lg text-slate-600">
+                        <p>Na aba <strong>Etapas do Funil</strong>, você encontra a regra exata de cada coluna do seu CRM.</p>
+                        <p>Na aba <strong>Rotina do Corretor</strong>, listamos os hábitos diários para garantir que nenhuma venda seja perdida por falta de acompanhamento.</p>
+                        <br>
+                        <p class="font-bold text-blue-600">Lembre-se: O funil limpo e atualizado é o segredo da conversão.</p>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Controlos do Slider -->
+            <div class="bg-slate-50 border-t border-slate-200 p-4 flex justify-between items-center z-20 relative">
+                <button onclick="changeSlide(-1)" class="px-4 py-2 bg-white border border-slate-300 rounded-lg shadow-sm hover:bg-slate-50 text-slate-700 flex items-center gap-2 transition-colors">
+                    <i data-lucide="chevron-left" class="w-4 h-4"></i> Anterior
+                </button>
+                <div class="flex gap-2" id="slide-dots">
+                    <span class="w-3 h-3 rounded-full bg-blue-600"></span>
+                    <span class="w-3 h-3 rounded-full bg-slate-300"></span>
+                </div>
+                <button onclick="changeSlide(1)" class="px-4 py-2 bg-blue-600 border border-blue-600 rounded-lg shadow-sm hover:bg-blue-700 text-white flex items-center gap-2 transition-colors">
+                    Próximo <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- ================= ABA 2: ETAPAS DO FUNIL (KANBAN) ================= -->
+        <div id="section-kanban" class="hidden gap-2 overflow-x-auto pb-6">
             
             <!-- Aguardando Atendimento -->
             <div class="kanban-column flex-shrink-0 rounded-xl border-t-4 border-blue-200 bg-blue-50 p-4 flex flex-col gap-4 shadow-sm">
@@ -84,23 +124,22 @@
                 </h3>
                 <div class="bg-white/60 p-3 rounded-lg border border-slate-200/50 text-xs">
                     <p class="mb-1"><strong>🎯 Objetivo:</strong> Iniciar o primeiro contato rapidamente.</p>
-                    <p class="mb-1"><strong>👉 Fazer:</strong> Puxar o lead e iniciar tentativa de contato.</p>
-                    <p><strong>🏁 Sair:</strong> Quando houver tentativa ou interação real.</p>
+                    <p><strong>👉 Fazer:</strong> Puxar o lead e iniciar tentativa de contato.</p>
                 </div>
                 <div class="flex flex-col gap-3">
-                    <div class="bg-white p-3 rounded-lg shadow-sm border border-slate-200 hover:border-blue-300 transition-colors">
+                    <div class="bg-white p-3 rounded-lg shadow-sm border border-slate-200">
                         <div class="text-sm font-bold mb-1">Contato não realizado</div>
                         <p class="text-xs text-slate-500">Lead novo que ainda não foi trabalhado pelo corretor.</p>
                     </div>
-                    <div class="bg-white p-3 rounded-lg shadow-sm border border-slate-200 hover:border-blue-300 transition-colors">
+                    <div class="bg-white p-3 rounded-lg shadow-sm border border-slate-200">
                         <div class="text-sm font-bold mb-1">Redistribuição de leads</div>
                         <p class="text-xs text-slate-500">Uso interno para ajuste de carteira (não usado pelo corretor).</p>
                     </div>
-                    <div class="bg-white p-3 rounded-lg shadow-sm border border-slate-200 hover:border-blue-300 transition-colors">
+                    <div class="bg-white p-3 rounded-lg shadow-sm border border-slate-200">
                         <div class="text-sm font-bold mb-1 text-blue-600 italic">Em atendimento (IA)</div>
                         <p class="text-xs text-slate-500">Lead sendo filtrado ou respondido pelo Cadu (IA).</p>
                     </div>
-                    <div class="bg-white p-3 rounded-lg shadow-sm border border-slate-200 hover:border-blue-300 transition-colors">
+                    <div class="bg-white p-3 rounded-lg shadow-sm border border-slate-200">
                         <div class="text-sm font-bold mb-1 text-blue-600 italic">Reunião agendada (IA)</div>
                         <p class="text-xs text-slate-500">Agendamento feito automaticamente pela IA.</p>
                     </div>
@@ -114,29 +153,24 @@
                 </h3>
                 <div class="bg-white/60 p-3 rounded-lg border border-slate-200/50 text-xs">
                     <p class="mb-1"><strong>🎯 Objetivo:</strong> Gerar conexão e qualificar para reunião.</p>
-                    <p class="mb-1"><strong>👉 Fazer:</strong> Realizar tentativas, qualificar perfil e agendar.</p>
-                    <p><strong>🏁 Sair:</strong> Quando houver reunião agendada ou avanço claro.</p>
+                    <p><strong>👉 Fazer:</strong> Realizar tentativas, qualificar perfil e agendar.</p>
                 </div>
                 <div class="flex flex-col gap-3">
-                    <div class="bg-white p-3 rounded-lg shadow-sm border border-slate-200 hover:border-emerald-300 transition-colors">
+                    <div class="bg-white p-3 rounded-lg shadow-sm border border-slate-200">
                         <div class="text-sm font-bold mb-1 text-emerald-600">Em conversa ativa</div>
                         <p class="text-xs text-slate-500">Cliente respondendo e interagindo no momento.</p>
                     </div>
-                    <div class="bg-white p-3 rounded-lg shadow-sm border border-slate-200 hover:border-emerald-300 transition-colors">
+                    <div class="bg-white p-3 rounded-lg shadow-sm border border-slate-200">
                         <div class="text-sm font-bold mb-1">1ª a 4ª Tentativa</div>
                         <p class="text-xs text-slate-500 font-medium">Registro obrigatório de cada tentativa de contato telefônico/WhatsApp.</p>
                     </div>
-                    <div class="bg-white p-3 rounded-lg shadow-sm border border-slate-200 hover:border-emerald-300 transition-colors">
+                    <div class="bg-white p-3 rounded-lg shadow-sm border border-slate-200">
                         <div class="text-sm font-bold mb-1 text-red-500">Tentativas esgotadas</div>
                         <p class="text-xs text-slate-500">Cliente não respondeu após a cadência de 4 tentativas.</p>
                     </div>
-                    <div class="bg-white p-3 rounded-lg shadow-sm border border-slate-200 hover:border-emerald-300 transition-colors">
+                    <div class="bg-white p-3 rounded-lg shadow-sm border border-slate-200">
                         <div class="text-sm font-bold mb-1">Retorno agendado</div>
                         <p class="text-xs text-slate-500">Cliente solicitou contato em horário específico.</p>
-                    </div>
-                    <div class="bg-white p-3 rounded-lg shadow-sm border border-slate-200 hover:border-emerald-300 transition-colors">
-                        <div class="text-sm font-bold mb-1 text-amber-600">Sem resposta</div>
-                        <p class="text-xs text-slate-500">Aguardando retorno após mensagem enviada.</p>
                     </div>
                 </div>
             </div>
@@ -148,27 +182,22 @@
                 </h3>
                 <div class="bg-white/60 p-3 rounded-lg border border-slate-200/50 text-xs">
                     <p class="mb-1"><strong>🎯 Objetivo:</strong> Não perder leads que ainda podem converter.</p>
-                    <p class="mb-1"><strong>👉 Fazer:</strong> Manter relacionamento e follow-ups estratégicos.</p>
-                    <p><strong>🏁 Sair:</strong> Quando o cliente voltar a demonstrar interesse ativo.</p>
+                    <p><strong>👉 Fazer:</strong> Manter relacionamento e follow-ups estratégicos.</p>
                 </div>
                 <div class="flex flex-col gap-3">
-                    <div class="bg-white p-3 rounded-lg shadow-sm border border-slate-200 hover:border-cyan-300 transition-colors">
+                    <div class="bg-white p-3 rounded-lg shadow-sm border border-slate-200">
                         <div class="text-sm font-bold mb-1">1º a 4º Follow Up</div>
                         <p class="text-xs text-slate-500">Tentativas periódicas de retomar o contato com o lead sumido.</p>
                     </div>
-                    <div class="bg-white p-3 rounded-lg shadow-sm border border-slate-200 hover:border-cyan-300 transition-colors">
+                    <div class="bg-white p-3 rounded-lg shadow-sm border border-slate-200">
                         <div class="text-sm font-bold mb-1 text-indigo-600">Vender para Comprar</div>
                         <p class="text-xs text-slate-500">Depende da venda de outro imóvel para avançar.</p>
                     </div>
-                    <div class="bg-white p-3 rounded-lg shadow-sm border border-slate-200 hover:border-cyan-300 transition-colors">
-                        <div class="text-sm font-bold mb-1">Reunião realizada</div>
-                        <p class="text-xs text-slate-500">Houve reunião mas o interesse esfriou temporariamente.</p>
-                    </div>
-                    <div class="bg-white p-3 rounded-lg shadow-sm border border-slate-200 hover:border-cyan-300 transition-colors">
+                    <div class="bg-white p-3 rounded-lg shadow-sm border border-slate-200">
                         <div class="text-sm font-bold mb-1">Imóvel não atende</div>
                         <p class="text-xs text-slate-500">O produto atual não encaixa, mas o lead pode querer futuros lançamentos.</p>
                     </div>
-                    <div class="bg-white p-3 rounded-lg shadow-sm border border-slate-200 hover:border-cyan-300 transition-colors">
+                    <div class="bg-white p-3 rounded-lg shadow-sm border border-slate-200">
                         <div class="text-sm font-bold mb-1">Lead em avaliação</div>
                         <p class="text-xs text-slate-500">Cliente analisando propostas ou momento de vida.</p>
                     </div>
@@ -182,25 +211,20 @@
                 </h3>
                 <div class="bg-white/60 p-3 rounded-lg border border-slate-200/50 text-xs">
                     <p class="mb-1"><strong>🎯 Objetivo:</strong> Converter negociação em venda.</p>
-                    <p class="mb-1"><strong>👉 Fazer:</strong> Acelerar negociação, tirar objeções e conduzir ao fechamento.</p>
-                    <p><strong>🏁 Sair:</strong> Quando houver reserva da unidade ou desistência final.</p>
+                    <p><strong>👉 Fazer:</strong> Acelerar negociação, tirar objeções e conduzir ao fechamento.</p>
                 </div>
                 <div class="flex flex-col gap-3">
-                    <div class="bg-white p-3 rounded-lg shadow-sm border border-orange-300 ring-1 ring-orange-100 hover:border-orange-400 transition-colors">
+                    <div class="bg-white p-3 rounded-lg shadow-sm border border-orange-300 ring-1 ring-orange-100">
                         <div class="text-sm font-bold mb-1 text-orange-600 uppercase italic">Negociação ativa</div>
                         <p class="text-xs text-slate-500 font-medium">Cliente em processo avançado de compra e proposta.</p>
                     </div>
-                    <div class="bg-white p-3 rounded-lg shadow-sm border border-slate-200 hover:border-orange-300 transition-colors">
+                    <div class="bg-white p-3 rounded-lg shadow-sm border border-slate-200">
                         <div class="text-sm font-bold mb-1">Aguardando retorno</div>
                         <p class="text-xs text-slate-500">Cliente avaliando proposta enviada ou contrato.</p>
                     </div>
-                    <div class="bg-white p-3 rounded-lg shadow-sm border border-slate-200 hover:border-orange-300 transition-colors">
-                        <div class="text-sm font-bold mb-1">Reunião agendada/realizada</div>
-                        <p class="text-xs text-slate-500">Reuniões focadas em fechamento e detalhes técnicos.</p>
-                    </div>
-                    <div class="bg-white p-3 rounded-lg shadow-sm border border-slate-200 hover:border-orange-300 transition-colors">
-                        <div class="text-sm font-bold mb-1">Revisão de proposta</div>
-                        <p class="text-xs text-slate-500">Fazendo ajustes finais de valores ou fluxo de pagamento.</p>
+                    <div class="bg-white p-3 rounded-lg shadow-sm border border-slate-200">
+                        <div class="text-sm font-bold mb-1">Reunião agendada</div>
+                        <p class="text-xs text-slate-500">Reunião focada em fechamento e detalhes técnicos.</p>
                     </div>
                 </div>
             </div>
@@ -228,11 +252,11 @@
 
         </div>
 
-        <!-- ================= SEÇÃO: ROTINA ================= -->
+        <!-- ================= ABA 3: ROTINA DO CORRETOR ================= -->
         <div id="section-routine" class="hidden">
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <!-- Registro -->
-                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 hover:shadow-md transition-shadow">
+                <!-- Registo -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
                     <div class="mb-4 bg-blue-50 w-12 h-12 rounded-xl flex items-center justify-center">
                         <i data-lucide="clipboard-list" class="text-blue-500"></i>
                     </div>
@@ -249,7 +273,7 @@
                 </div>
 
                 <!-- Tarefas -->
-                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 hover:shadow-md transition-shadow">
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
                     <div class="mb-4 bg-purple-50 w-12 h-12 rounded-xl flex items-center justify-center">
                         <i data-lucide="calendar" class="text-purple-500"></i>
                     </div>
@@ -260,8 +284,8 @@
                     </div>
                 </div>
 
-                <!-- Mudança de Etapa -->
-                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 hover:shadow-md transition-shadow">
+                <!-- Etapa -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
                     <div class="mb-4 bg-orange-50 w-12 h-12 rounded-xl flex items-center justify-center">
                         <i data-lucide="refresh-cw" class="text-orange-500"></i>
                     </div>
@@ -272,8 +296,8 @@
                     </div>
                 </div>
 
-                <!-- Auditoria -->
-                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 hover:shadow-md transition-shadow">
+                <!-- Histórico -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
                     <div class="mb-4 bg-slate-100 w-12 h-12 rounded-xl flex items-center justify-center">
                         <i data-lucide="history" class="text-slate-500"></i>
                     </div>
@@ -285,7 +309,7 @@
                 </div>
             </div>
 
-            <!-- Banner de Reserva -->
+            <!-- Reserva -->
             <div class="bg-gradient-to-r from-blue-700 to-indigo-800 p-8 rounded-2xl text-white flex flex-col md:flex-row items-center justify-between gap-6 shadow-xl mt-8">
                 <div class="max-w-xl text-center md:text-left">
                     <h3 class="text-2xl font-bold mb-2 flex items-center justify-center md:justify-start gap-2">
@@ -302,217 +326,84 @@
             </div>
         </div>
 
-        <!-- ================= SEÇÃO: ASSISTENTE VIRTUAL (Local/Regras) ================= -->
-        <div id="section-ai" class="hidden flex-col gap-4">
-            <div class="bg-white rounded-2xl shadow-sm border border-slate-200 flex flex-col overflow-hidden chat-container">
-                <!-- Chat Header -->
-                <div class="bg-slate-50 border-b border-slate-200 p-4 flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600">
-                            <i data-lucide="bot" class="w-6 h-6"></i>
-                        </div>
-                        <div>
-                            <h3 class="font-bold text-slate-800">Assistente Virtual Conviva</h3>
-                            <p class="text-xs text-slate-500">Consulte as regras do funil instantaneamente (Offline).</p>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Chat Messages Area -->
-                <div id="chat-messages" class="flex-1 overflow-y-auto p-4 flex flex-col gap-4 bg-slate-50/50">
-                    <!-- Mensagem Inicial -->
-                    <div class="flex gap-3 max-w-[85%]">
-                        <div class="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center flex-shrink-0 mt-1">
-                            <i data-lucide="bot" class="w-4 h-4 text-emerald-600"></i>
-                        </div>
-                        <div class="msg-ai p-3 rounded-2xl rounded-tl-none text-sm shadow-sm prose">
-                            <p>Olá! Sou o Assistente Virtual da Conviva. Fui programado com todo o <strong>Manual do CRM</strong>.</p>
-                            <p>Pode fazer perguntas rápidas sobre as regras, como:</p>
-                            <ul>
-                                <li><em>"Quando devo usar venda perdida?"</em></li>
-                                <li><em>"O que é lead desqualificado?"</em></li>
-                                <li><em>"Como devo registrar uma anotação?"</em></li>
-                                <li><em>"O cliente não responde, o que faço?"</em></li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Chat Input Area -->
-                <div class="p-4 bg-white border-t border-slate-200">
-                    <form id="ai-form" class="flex gap-2 relative">
-                        <input type="text" id="ai-input" class="flex-1 bg-slate-100 border-none rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500" placeholder="Escreva a sua dúvida aqui..." autocomplete="off">
-                        <button type="submit" class="bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl px-5 py-3 flex items-center justify-center transition-colors">
-                            <i data-lucide="send" class="w-4 h-4"></i>
-                        </button>
-                    </form>
-                </div>
-            </div>
-        </div>
-
     </main>
 
-    <footer class="mt-8 p-8 border-t border-slate-200 text-center">
-        <p class="text-slate-400 text-xs italic">
-            Conviva Engenharia - Guia Operacional v1.0 • 2024
-        </p>
-    </footer>
-
-    <!-- Scripts: Lógica de Abas e Assistente Local -->
+    <!-- Scripts de Lógica -->
     <script>
-        // Inicializar ícones Lucide
-        lucide.createIcons();
+        // Inicializar os ícones Lucide garantidamente após o carregamento
+        document.addEventListener("DOMContentLoaded", function() {
+            lucide.createIcons();
+        });
+
+        // Variáveis do Slider (Aba Manual)
+        let currentSlide = 0;
+        const totalSlides = 2; // Slide 0 e Slide 1
+
+        function changeSlide(direction) {
+            // Ocultar slide atual
+            const currentElement = document.getElementById(`slide-${currentSlide}`);
+            currentElement.classList.remove('opacity-100', 'z-10');
+            currentElement.classList.add('opacity-0', 'z-0', 'pointer-events-none');
+            
+            // Calcular o próximo slide de forma cíclica
+            currentSlide += direction;
+            if (currentSlide < 0) currentSlide = totalSlides - 1;
+            if (currentSlide >= totalSlides) currentSlide = 0;
+            
+            // Mostrar novo slide
+            const nextElement = document.getElementById(`slide-${currentSlide}`);
+            nextElement.classList.remove('opacity-0', 'z-0', 'pointer-events-none');
+            nextElement.classList.add('opacity-100', 'z-10');
+
+            updateDots();
+        }
+
+        // Atualizar os indicadores (pontos) do slide
+        function updateDots() {
+            const dotsContainer = document.getElementById('slide-dots');
+            dotsContainer.innerHTML = '';
+            for (let i = 0; i < totalSlides; i++) {
+                const dot = document.createElement('span');
+                dot.className = `w-3 h-3 rounded-full transition-colors ${i === currentSlide ? 'bg-blue-600' : 'bg-slate-300'}`;
+                dotsContainer.appendChild(dot);
+            }
+        }
 
         // Lógica de Troca de Abas
         function switchTab(tab) {
-            const sections = ['kanban', 'routine', 'ai'];
+            const sections = ['manual', 'kanban', 'routine'];
             const btnPrefix = 'btn-';
             const secPrefix = 'section-';
 
-            // Ocultar e resetar todos
+            // Ocultar todas as seções e repor estilos dos botões
             sections.forEach(s => {
                 document.getElementById(secPrefix + s).classList.add('hidden');
-                document.getElementById(secPrefix + s).classList.remove('flex');
+                document.getElementById(secPrefix + s).classList.remove('flex', 'block');
                 
                 const btn = document.getElementById(btnPrefix + s);
                 btn.classList.remove('tab-active');
                 btn.classList.add('text-slate-600');
             });
 
-            // Mostrar o selecionado
-            const targetSec = document.getElementById(secPrefix + tab);
+            // Ativar botão selecionado
             const targetBtn = document.getElementById(btnPrefix + tab);
-            const alertMsg = document.getElementById('main-alert');
-            
             targetBtn.classList.add('tab-active');
             targetBtn.classList.remove('text-slate-600');
             
-            if (tab === 'kanban') {
+            // Mostrar a seção correspondente
+            const targetSec = document.getElementById(secPrefix + tab);
+            if (tab === 'manual') {
                 targetSec.classList.remove('hidden');
                 targetSec.classList.add('flex');
-                alertMsg.style.display = 'flex';
+            } else if (tab === 'kanban') {
+                targetSec.classList.remove('hidden');
+                targetSec.classList.add('flex');
             } else if (tab === 'routine') {
                 targetSec.classList.remove('hidden');
-                alertMsg.style.display = 'flex';
-            } else if (tab === 'ai') {
-                targetSec.classList.remove('hidden');
-                targetSec.classList.add('flex');
-                alertMsg.style.display = 'none';
+                targetSec.classList.add('block'); // Rotina precisa de ser block por causa da grid
             }
         }
-
-        // --- LÓGICA DO ASSISTENTE VIRTUAL LOCAL (Sem API) ---
-        const chatMessages = document.getElementById('chat-messages');
-        const aiForm = document.getElementById('ai-form');
-        const aiInput = document.getElementById('ai-input');
-
-        function appendMessage(role, text) {
-            const msgDiv = document.createElement('div');
-            msgDiv.className = `flex gap-3 max-w-[85%] ${role === 'user' ? 'self-end flex-row-reverse' : ''}`;
-            
-            const iconHTML = role === 'user' 
-                ? `<div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0 mt-1"><i data-lucide="user" class="w-4 h-4 text-blue-600"></i></div>`
-                : `<div class="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center flex-shrink-0 mt-1"><i data-lucide="bot" class="w-4 h-4 text-emerald-600"></i></div>`;
-            
-            const contentHTML = `<div class="${role === 'user' ? 'msg-user' : 'msg-ai'} p-3 rounded-2xl ${role === 'user' ? 'rounded-tr-none' : 'rounded-tl-none'} text-sm shadow-sm prose">${role === 'user' ? text : marked.parse(text)}</div>`;
-            
-            msgDiv.innerHTML = iconHTML + contentHTML;
-            chatMessages.appendChild(msgDiv);
-            lucide.createIcons();
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-        }
-
-        function showLoading() {
-            const loadingDiv = document.createElement('div');
-            loadingDiv.id = 'ai-loading';
-            loadingDiv.className = `flex gap-3 max-w-[85%]`;
-            loadingDiv.innerHTML = `
-                <div class="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center flex-shrink-0 mt-1">
-                    <i data-lucide="bot" class="w-4 h-4 text-emerald-600"></i>
-                </div>
-                <div class="msg-ai p-4 rounded-2xl rounded-tl-none text-sm shadow-sm flex gap-1 items-center h-[46px]">
-                    <div class="w-2 h-2 bg-emerald-400 rounded-full typing-dot"></div>
-                    <div class="w-2 h-2 bg-emerald-400 rounded-full typing-dot"></div>
-                    <div class="w-2 h-2 bg-emerald-400 rounded-full typing-dot"></div>
-                </div>
-            `;
-            chatMessages.appendChild(loadingDiv);
-            lucide.createIcons();
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-        }
-
-        function removeLoading() {
-            const loadingDiv = document.getElementById('ai-loading');
-            if (loadingDiv) loadingDiv.remove();
-        }
-
-        // Base de Conhecimento "Local" (Regras programadas)
-        function getLocalResponse(input) {
-            const text = input.toLowerCase();
-            
-            // Regras de Finalização
-            if (text.includes('venda perdida') || text.includes('distrato')) {
-                return "**⚠️ Atenção:** A etapa de **Venda Perdida** deve ser usada EXCLUSIVAMENTE em casos de distrato (cancelamento de contrato que já estava assinado).\n\nNunca utilize para clientes que pararam de responder ou que não aprovaram o crédito.";
-            }
-            if (text.includes('desqualificado') || text.includes('fora de região') || text.includes('sem perfil')) {
-                return "O status **Lead Desqualificado** serve para classificar leads sem potencial de compra. Motivos válidos: \n- Dados incorretos\n- Sem interesse\n- Sem condição financeira/renda\n- Procura noutra região ou perfil de produto diferente.";
-            }
-            
-            // Regras de Rotina/Anotações
-            if (text.includes('registrar') || text.includes('anotar') || text.includes('anotação') || text.includes('histórico')) {
-                return "De acordo com o manual, **toda** a interação com o cliente deve ser registada no histórico.\n\nO padrão obrigatório de registo é:\n1. **O que aconteceu:** (Ex: Liguei e ele atendeu)\n2. **Interesse do cliente:** (Ex: Tem interesse num T2, mas precisa vender o dele primeiro)\n3. **Próximo passo:** (Ex: Agendado retorno para o dia 15)";
-            }
-            if (text.includes('tarefa') || text.includes('agendar')) {
-                return "A regra de ouro das tarefas é: **Todo o lead ativo tem de ter uma próxima ação definida.** Utilize as tarefas para marcar follow-ups, reuniões ou retornos combinados com o cliente.";
-            }
-            
-            // Regras do Funil
-            if (text.includes('não responde') || text.includes('sumiu') || text.includes('tentativa')) {
-                return "Na etapa **Em Atendimento**, deve fazer de 1 a 4 tentativas de contacto. Registe cada uma. Se o cliente esgotar as 4 tentativas e não responder, coloque o status como **Tentativas Esgotadas**.";
-            }
-            if (text.includes('frio') || text.includes('esfriou') || text.includes('vender para comprar')) {
-                return "A etapa **Atendimento Frio** é para não perder clientes que ainda podem converter no futuro. Utilize-a quando o cliente precisa vender um imóvel primeiro, quando não temos um produto que atenda no momento, ou para ir fazendo follow-ups periódicos.";
-            }
-            if (text.includes('quente') || text.includes('proposta') || text.includes('negociação')) {
-                return "A etapa **Atendimento Quente** foca na conversão. Mova o lead para cá quando estiver com negociação ativa, aguardando resposta da proposta ou em ajustes finais de valores.";
-            }
-            if (text.includes('reserva')) {
-                return "A **Reserva** é o momento de conversão! O gatilho para a solicitar é a transição do Atendimento Quente para a Venda. Certifique-se de que os dados pessoais e o perfil de rendimentos do cliente estão 100% atualizados para evitar problemas de aprovação.";
-            }
-            if (text.includes('regra de ouro') || text.includes('regra principal')) {
-                return "**Se não está no CRM, não aconteceu.** \n\nO CRM é a sua ferramenta de proteção e o que garante a continuidade comercial.";
-            }
-            if (text.includes('venda ganha') || text.includes('fechou')) {
-                return "Parabéns pela venda! Na **Venda Ganha**, o seu trabalho é nutrir o relacionamento: mantenha o contacto para futuras compras e não se esqueça de pedir indicações de novos clientes.";
-            }
-
-            // Resposta Padrão (Fallback)
-            return "Desculpe, sou um assistente programado apenas com as regras específicas do CRM Conviva. \n\nPode perguntar-me sobre:\n- *Como usar a venda perdida?*\n- *O que é lead desqualificado?*\n- *Qual é o padrão de anotação?*\n- *O que fazer se o cliente não responder?*";
-        }
-
-        // Submit do Form
-        aiForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const userText = aiInput.value.trim();
-            if (!userText) return;
-
-            // Update UI
-            appendMessage('user', userText);
-            aiInput.value = '';
-            aiInput.disabled = true;
-            showLoading();
-
-            // Simular tempo de resposta da IA
-            setTimeout(() => {
-                const responseText = getLocalResponse(userText);
-                removeLoading();
-                appendMessage('ai', responseText);
-                
-                aiInput.disabled = false;
-                aiInput.focus();
-            }, 800); // 800ms delay para parecer natural
-        });
-
     </script>
 </body>
 </html>
+```
